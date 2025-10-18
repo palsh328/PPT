@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Outer circle border -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#1976d2" stroke-width="12"/>
+  
+  <!-- PPT Text - Bold and large -->
+  <text x="100" y="115" font-family="Arial, sans-serif" font-size="72" font-weight="900" text-anchor="middle" fill="#1976d2">PPT</text>
+  
+  <!-- Pulse wave under the text -->
+  <path d="M40 135 L55 135 L62 125 L69 145 L76 115 L83 150 L90 135 L105 135" 
+        fill="none" stroke="#1976d2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Circuit elements on the right -->
+  <g transform="translate(135, 145)" fill="#1976d2" stroke="#1976d2" stroke-width="3">
+    <!-- Vertical connection line -->
+    <path d="M0 0 L0 -20" fill="none"/>
+    <!-- Angled connections -->
+    <path d="M0 -20 L12 -32 M0 -20 L12 -8" fill="none"/>
+    
+    <!-- Circuit nodes/connection points -->
+    <circle cx="0" cy="0" r="4"/>
+    <circle cx="0" cy="-20" r="4"/>
+    <circle cx="12" cy="-32" r="4"/>
+    <circle cx="12" cy="-8" r="4"/>
+  </g>
+</svg>
