@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import Header from '@/components/layout/Header';
@@ -32,21 +31,41 @@ export default function ProductsPage() {
     page: 1
   });
 
-  const searchParams = useSearchParams();
-
+  // Initialize filters from URL params on client side to avoid prerender-time
   useEffect(() => {
-    // Initialize filters from URL params
+    // Guard for environments where window is not available
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search || '');
     const initialFilters = {
-      category: searchParams.get('category') || '',
-      brand: searchParams.get('brand') || '',
-      minPrice: searchParams.get('minPrice') || '',
-      maxPrice: searchParams.get('maxPrice') || '',
-      search: searchParams.get('search') || '',
-      sortBy: searchParams.get('sortBy') || 'newest',
-      page: parseInt(searchParams.get('page')) || 1
+      category: params.get('category') || '',
+      brand: params.get('brand') || '',
+      minPrice: params.get('minPrice') || '',
+      maxPrice: params.get('maxPrice') || '',
+      search: params.get('search') || '',
+      sortBy: params.get('sortBy') || 'newest',
+      page: parseInt(params.get('page')) || 1
     };
     setFilters(initialFilters);
-  }, [searchParams]);
+
+    // update filters when the user navigates back/forward
+    const onPopState = () => {
+      const p = new URLSearchParams(window.location.search || '');
+      setFilters((prev) => ({
+        ...prev,
+        category: p.get('category') || '',
+        brand: p.get('brand') || '',
+        minPrice: p.get('minPrice') || '',
+        maxPrice: p.get('maxPrice') || '',
+        search: p.get('search') || '',
+        sortBy: p.get('sortBy') || 'newest',
+        page: parseInt(p.get('page')) || 1
+      }));
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -109,6 +128,20 @@ export default function ProductsPage() {
     };
     setFilters(newFilters);
     updateURL(newFilters);
+  };
+
+  // Update the browser URL to reflect current filters without reloading
+  const updateURL = (filtersObj) => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams();
+    Object.entries(filtersObj).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    });
+    const query = params.toString();
+    const newUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
   };
 
   const getActiveFiltersCount = () => {
